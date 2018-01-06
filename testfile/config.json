@@ -1,0 +1,20 @@
+{
+    "bridge": {
+        "name": "Homebridge",
+        "username": "BB:22:3D:E3:BE:30",
+        "port": "51283",
+        "pin": "123-45-678"
+    },
+    "platforms": [
+        {
+            "platform": "yeelight",
+            "name": "yeelight"
+        },
+        {
+            "platform": "MiAqaraPlatform",
+            "gateways": {
+                "f0b429cc5ae7": "o5n7jo0xu8xxg45v"
+            }
+        }
+    ]
+}

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <link rel="stylesheet" href="/js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.css">
+  <script type="text/javascript" src="/js/jquery-1.9.1.min.js"></script>
+  <script src="/js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
+  <script type="text/javascript" src="/js/validateparameter.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+       $("a[name='AddAccessoryDlg']").click(function(event){
+        var hostip = $('#ControlDeviceHost').html().replace(/\s/g,"");
+        var hostport = $('#ControlDevicePort').html().replace(/\s/g,"");
+        console.log("hostip :"+hostip + ", hostport :"+hostport);
+        if((!isValidIP(hostip)) || (!isValidPort(hostport)))
+        {
+          console.log("hostip :"+hostip + ", hostport :"+hostport+"exist invalid");
+          setTimeout(function(){$('#ErrIPOrPort').trigger('create').popup('open');},300);
+          event.stopPropagation();
+        }
+      });
+    });
+    function ShowSetHostDlg()
+    {
+      setTimeout(function(){$('#SetHostDlg').trigger('create').popup('open');},300);
+    }
+    function ShowAddAccessoryDlg()
+    {
+      setTimeout(function(){$('#AddAccessoryDlg').trigger('create').popup('open');},300);
+    }
+
+    function SetNetParams()
+    {
+        var hostip = $('#HOSTIP').val().replace(/\s/g,"");
+        var hostport = $('#HOSTPORT').val().replace(/\s/g,"");
+        console.log("hostip :"+hostip + ", hostport :"+hostport);
+        if(isValidIP(hostip) && isValidPort(hostport))
+        {
+            $.post('/addhostport',{host:hostip,port:hostport},function(data,status){
+            if(data.status == 'ok')
+            {
+              $('#ControlDeviceHost').html(hostip);
+              $('#ControlDevicePort').html(hostport);
+              setTimeout(function(){$('#popupREQOK').trigger('create').popup('open');},800);
+              setTimeout(function(){$('#popupREQOK').popup('close');},2000);
+              setTimeout(function(){window.location.reload();},2500);
+            }
+            else if(data.status == 'errinvalid') 
+            {
+              console.log('Ip or Port is invalid!');
+              setTimeout(function(){$('#ErrIPOrPort').trigger('create').popup('open');},800);
+            }
+            else
+            {
+              console.log('请求失败!');
+              setTimeout(function(){$('#popupREQERROR').trigger('create').popup('open');},2000);
+            }
+          },"json").error(function(){
+            console.log('请求失败!');
+              setTimeout(function(){$('#popupREQERROR').trigger('create').popup('open');},600);
+          });
+          
+        }
+        else
+        {
+          setTimeout(function(){$('#ErrIPOrPort').trigger('create').popup('open');},800);
+        }
+    }
+    function isValidSGroupOrChannel(str)
+    {
+        var pattern = /^[0-9]+$/i;
+        if(pattern.test(str)){  
+            console.log("param :"+str+" is Valid");
+            return true;
+
+        }else{  
+            console.log("param :"+str+"is Invalid");
+            return false;  
+        }   
+    }
+
+    function AddAccessory()
+    {
+      var groupId = $('#GroupID').val().replace(/\s/g,"");
+      var channelId = $('#ChanelID').val().replace(/\s/g,"");
+      var channeltype = $("#ChannelType option:selected").val();
+      console.log("groupId :" + groupId + ", channelId : "+channelId +" , channeltype :"+channeltype);
+      if ((groupId > 0) && (groupId < 255) && (channelId > 0)  && (channelId < 16) && (isValidSGroupOrChannel(groupId) && isValidSGroupOrChannel(channelId)))
+      {
+            $.post('/addaccessory',{groupId:groupId,channelId:channelId,channeltype:channeltype},function(data,status){
+            if(data.status == 'ok')
+            {
+              setTimeout(function(){$('#popupREQOK').trigger('create').popup('open');},800);
+              setTimeout(function(){$('#popupREQOK').popup('close');},2000);
+              setTimeout(function(){window.location.reload();},2500);
+            }
+            else if(data.status == 'errinvalid') 
+            {
+              console.log('groupId or channelId or channeltype is invalid!');
+              setTimeout(function(){$('#ErrAccessory').trigger('create').popup('open');},800);
+            }
+            else
+            {
+              console.log('请求失败!');
+              setTimeout(function(){$('#popupREQERROR').trigger('create').popup('open');},2000);
+            }
+          },"json").error(function(){
+            console.log('请求失败!');
+              setTimeout(function(){$('#popupREQERROR').trigger('create').popup('open');},600);
+          });
+      }
+      else
+      {
+        setTimeout(function(){$('#ErrAccessory').trigger('create').popup('open');},300);
+      }
+  }
+  </script>
+</head>
+
+<body>
+
+  <div data-role="page">
+    <div data-role="header">
+      <h1>设备配置</h1>
+    </div>
+    <div data-role="content">
+      <a href="#SetHostDlg"  data-rel="popup" data-position-to="window" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-gear ui-btn-icon-left ui-btn-a" data-transition="pop">设置设备IP</a>
+      <table >
+              <tr>
+                  <td style="vertical-align:middle"><label for="ControlDeviceHost">设备   IP&nbsp;&nbsp;&nbsp;&nbsp;:</label></td>
+                  <td style="vertical-align:middle"><label id="ControlDeviceHost" name="ControlDeviceHost" value="<%= ipportobj['host']%>"><%= ipportobj['host']%></td>
+              </tr>
+              <tr>
+                  <td style="vertical-align:middle"><label for="ControlDevicePort">设备 Port&nbsp;:</label></td>
+                  <td style="vertical-align:middle"><label id="ControlDevicePort" name="ControlDevicePort" value="<%= ipportobj['port']%>"><%= ipportobj['port']%></td>
+              </tr>
+      </table>
+
+    <a href="#AddAccessoryDlg" name='AddAccessoryDlg'  data-rel="popup" data-position-to="window" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-plus ui-btn-icon-left ui-btn-a" data-transition="pop">添加控制通道</a>
+      <table  border="1" align="center" cellspacing="1" data-role="table" class="ui-responsive" style="margin-top:1px;margin-left:1px;margin-right:1px;margin-bottom:1px;">
+        <thead>
+          <tr>
+            <th>组ID</th>
+            <th>通道ID</th>
+            <th>通道类型</th>
+            <th>执行操作</th>
+          </tr>
+        </thead>
+        <tbody>
+            <% for(var i =0; i < configobj['accessories'].length;i++)
+            {%>  
+              <tr>
+                  <td style="vertical-align:middle"><%= configobj['accessories'][i]['groupId'].replace(/"/ig,'') %></td>
+                  <td style="vertical-align:middle"><%= configobj['accessories'][i]['channelId'].replace(/"/ig,'') %></td>
+                  <td style="vertical-align:middle"><%= configobj['accessories'][i]['channeltype'].replace(/"/ig,'') %></td>
+                  <td style="vertical-align:middle"><a href="#popupDeleteGateWay" data-rel="popup"  data-position-to="window" data-transition="pop" class="ui-btn ui-btn-inline ui-icon-delete ui-btn-icon-left">删除</a></td>
+              </tr>
+           <% 
+              }
+            %>          
+        </tbody>
+      </table>
+    </div>
+    <div data-role="footer">
+        <div align="center"><a href="mailto:centurygate@163.com">centurygate@163.com</a></div>
+      </div>
+
+      <div data-role="popup" id="popupREQOK" data-overlay-theme="b" data-theme="b" data-dismissible="false" style="max-width:400px;">
+          <div role="main" class="ui-content">
+              <h3 class="ui-title ui-icon-check">执行成功!</h3>
+          </div>
+      </div>
+
+      <div data-role="popup" id="ErrIPOrPort" data-overlay-theme="b" data-theme="b" data-dismissible="false" style="max-width:400px;">
+          <div role="main" class="ui-content">
+              <h3 class="ui-title">IP 或 Port 非法,请重新设置!</h3>
+              <a href="#" onclick="ShowSetHostDlg()" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-alert" data-rel="back">确定</a>
+          </div>
+      </div>
+      <div data-role="popup" id="ErrAccessory" data-overlay-theme="b" data-theme="b" data-dismissible="false" style="max-width:400px;">
+          <div role="main" class="ui-content">
+              <h3 class="ui-title">GroupID 或 ChannelID 或 类型非法,请重新设置!</h3>
+              <a href="#" onclick="ShowAddAccessoryDlg()" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-alert" data-rel="back">确定</a>
+          </div>
+      </div>
+
+      <div data-role="popup" id="popupSIDEMPTY" data-overlay-theme="b" data-theme="b" data-dismissible="false" style="max-width:400px;">
+          <div role="main" class="ui-content">
+              <h3 class="ui-title">要删除的SID不能为空!</h3>
+              <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-alert" data-rel="back">确定</a>
+          </div>
+      </div>
+      <div data-role="popup" id="popupREQERROR" data-overlay-theme="b" data-theme="b" data-dismissible="false" style="max-width:400px;">
+          <div role="main" class="ui-content">
+              <h3 class="ui-title">向服务器请求失败,请检查网络设置!</h3>
+              <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-alert" data-rel="back">确定</a>
+          </div>
+      </div>
+
+      <div data-role="popup" id="popupERREXIST" data-overlay-theme="b" data-theme="b" data-dismissible="false" style="max-width:400px;">
+          <div role="main" class="ui-content">
+              <h3 class="ui-title">要添加的网关已存在列表中,请先删除后再添加!</h3>
+              <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-alert" data-rel="back">确定</a>
+          </div>
+      </div>
+
+      <div data-role="popup" id="popupERRNOTEXIST" data-overlay-theme="b" data-theme="b" data-dismissible="false" style="max-width:400px;">
+          <div role="main" class="ui-content">
+              <h3 class="ui-title">要删除的网关不存在!</h3>
+              <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-alert" data-rel="back">确定</a>
+          </div>
+      </div>
+      
+      
+      <div data-role="popup" id="AddAccessoryDlg" data-theme="a" class="ui-corner-all" style="min-width:310px;max-width:400px;">
+          <form>
+              <div style="padding:10px 20px;">
+                  <h3>请填写控制通道信息</h3>
+                  <label for="GroupID">GroupID:    [范围 0~255]</label>
+                  <input type="text" name="GroupID" id="GroupID" value="" placeholder="范围 0~255" data-theme="a" autocomplete="off">
+                  <label for="ChanelID">ChanelID:    [范围 0~15]</label>
+                  <input type="text" name="ChanelID" id="ChanelID" value="" placeholder="范围 0~16" data-theme="a" autocomplete="off">
+                  <fieldset data-role="fieldcontain">
+                    <label for="ChannelType">请选择类型</label>
+                    <select name="ChannelType" id="ChannelType">
+                     <option value="switch">开关</option>
+                     <option value="bulb">调光</option>
+                     <option value="inputconrol">输入控制</option>
+                    </select>
+                  </fieldset>
+                  
+                  <a href="#"  onclick = "AddAccessory()" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check" data-rel="back">确定</a>
+                  
+              </div>
+          </form>
+      </div>
+
+      <div data-role="popup" id="SetHostDlg" data-theme="a" class="ui-corner-all" style="min-width:310px;max-width:400px;">
+                <form>
+                    <div style="padding:10px 20px;">
+                        <h3>请填写控制设备IP 和 Port</h3>
+                        
+                        <input type="text" name="HOSTIP" id="HOSTIP" value="" placeholder="设备IP" data-theme="a" autocomplete="off">
+                        <input type="text" name="HOSTPORT" id="HOSTPORT" value="" placeholder="设备Port" data-theme="a" autocomplete="off">
+                        <a href="#"  onclick = "SetNetParams()" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check" data-rel="back">确定</a>
+                    </div>
+                </form>
+      </div>
+     
+      <div data-role="popup" id="popupDeleteGateWay" data-overlay-theme="b" data-theme="b" data-dismissible="false" style="max-width:400px;">
+      
+          <div role="main" class="ui-content">
+              <h3 class="ui-title">确定删除该网关?</h3>
+              <a href="#" class="ui-btn ui-corner-all  ui-btn-inline ui-btn-b" data-rel="back">否</a>
+              <a href="#" class="ui-btn ui-corner-all ui-btn-inline ui-btn-b" onclick='POSTDELSID()' data-rel="back" >是</a>
+          </div>
+      </div>
+</body>
+</html>
