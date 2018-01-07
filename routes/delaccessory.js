@@ -4,6 +4,8 @@ var router = express.Router();
 var configpath = "/home/free/config.json";
 var ipportpath = "/home/free/host.json";
 var process = require('child_process');
+var pos = 0;
+// var find = false;
 /* GET users listing. */
 router.post('/', function(req, res, next) {
     try{
@@ -15,7 +17,7 @@ router.post('/', function(req, res, next) {
     var len = configobj['accessories'].length;
     var groupId = req.body.groupId;
     var channelId = req.body.channelId;
-    var channeltype = req.body.channeltype;
+    
     console.log('________________________________________________________');
     console.log("Read config.json   "+JSON.stringify(configobj));
     console.log('Read host.json : ' + JSON.stringify(ipportobj));
@@ -23,40 +25,47 @@ router.post('/', function(req, res, next) {
     console.log(JSON.stringify(req.body));
     console.log('________________________________________________________');
       
-    console.log("groupId :" + groupId + ", channelId : "+channelId +" , channeltype :"+channeltype);
+    console.log("groupId :" + groupId + ", channelId : "+channelId);
     if ((groupId > 0) && (groupId < 255) && (channelId > 0)  && (channelId < 16))
     {
 
-        //check the repeatability of the accessory , but only the groupId and channelId will be checked
-        for(var k =0; k < configobj['accessories'].length; k++)
+        for (var i = 0; i < len; i++) 
         {
-            if (configobj['accessories'][k]['groupId'] == groupId && configobj['accessories'][k]['channelId'] == channelId) 
+            if(configobj['accessories'][i].groupId == groupId && configobj['accessories'][i].channelId == channelId)
             {
-                result.status = 'errexist';
-                res.end(JSON.stringify(result));
-                return;
+                // result.status =  'ok';
+                // console.log("The System will delete the accessory : \n" + configobj['accessories'][i]);
+                //delete configobj['accessories'][i];
+                // console.log("Will Write Contents as below to config.json .....................................");
+                // console.log(JSON.stringify(configobj,null,4));
+                // fs.writeFileSync(configpath,JSON.stringify(configobj,null,4));
+                // res.end(JSON.stringify(result));
+                // return;
+                pos = i;
+                // find = true;
+                break;
             }
         }
-        var accessory =
+        if(i == len)
         {
-                "accessory": "HomebridgeSwitchController-chan"+req.body.channelId,
-                "name": "gp"+groupId+"-chan"+channelId+"-"+channeltype,
-                "port": ipportobj['port'],
-                "host": ipportobj['host'],
-                "groupId": groupId,
-                "channelId": channelId,
-                "channeltype":channeltype
-        };
+            console.log("accessory is not exist............");
+            result.status = 'errnotexist';
+            res.end(JSON.stringify(result));
+            return;
+        }
+        //delete the element at pos, Please do not use delete configobj['accessories'][i];  or the length of configobj['accessories'] will not change and the element at pos changes to be null
+        for(var j = pos; j < (len-1);j++)
+        {
+            configobj['accessories'][j]=configobj['accessories'][j+1];
+        }
+        configobj['accessories'].length = len-1;
         result.status =  'ok';
-        console.log("Assemblied the accessory info is \n"+JSON.stringify(accessory,null,4));
-        configobj['accessories'][len]=accessory;
         console.log("Will Write Contents as below to config.json .....................................");
         console.log(JSON.stringify(configobj,null,4));
         fs.writeFileSync(configpath,JSON.stringify(configobj,null,4));
         res.end(JSON.stringify(result));
-        // process.exec('reboot -f',function(err, stdout, stderr){
-        //     console.log(stdout);
-        //   });
+        return;
+
     }
     else
     {

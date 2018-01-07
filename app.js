@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 var index = require('./routes/index');
 var addhostport = require('./routes/addhostport');
 var addaccessory = require('./routes/addaccessory');
+var delaccessory = require('./routes/delaccessory');
 var app = express();
 
 // view engine setup
@@ -25,6 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 app.use('/addhostport', addhostport);
 app.use('/addaccessory', addaccessory);
+app.use('/delaccessory', delaccessory);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');

@@ -100,6 +100,11 @@
               console.log('groupId or channelId or channeltype is invalid!');
               setTimeout(function(){$('#ErrAccessory').trigger('create').popup('open');},800);
             }
+            else if(data.status == 'errexist')
+            {
+              console.log('groupId or channelId or channeltype is invalid!');
+              setTimeout(function(){$('#ErrExistAccessory').trigger('create').popup('open');},800);
+            }
             else
             {
               console.log('请求失败!');
@@ -114,6 +119,57 @@
       {
         setTimeout(function(){$('#ErrAccessory').trigger('create').popup('open');},300);
       }
+  }
+  var delgroupId='';
+  var delchannelId='';
+
+  function PreDelAccessory(groupId,channelId) {
+    // body...
+      console.log("It will delete group: "+ groupId+" , chanel:"+channelId );
+      delgroupId = groupId;
+      delchannelId = channelId;
+  }
+  function PostDelAccessory()
+  {
+      if (delgroupId =='' || delchannelId=='') 
+      {
+        console.log('要删除的组ID或通道ID不能为空');
+        //alert('要删除的SID不能为空');
+        setTimeout(function(){$('#ErrGroupIdOrChannelIdEmpty').trigger('create').popup('open');},2000);
+        return;
+      }
+      $.post('/delaccessory',{groupId :delgroupId,channelId:delchannelId},function(data,status){
+        delgroupId='';
+        delchannelId='';
+        if(data.status == 'ok')
+        {
+          
+          setTimeout(function(){$('#popupREQOK').trigger('create').popup('open');},800);
+          setTimeout(function(){$('#popupREQOK').popup('close');},2000);
+          setTimeout(function(){window.location.reload();},2500);
+        }
+        else if (data.status == 'errnotexist') 
+        {
+           console.log('要删除的组ID或通道ID不存在!');
+          // alert('请求失败!');
+          setTimeout(function(){$('#popupERRNOTEXIST').trigger('create').popup('open');},800);
+        }
+        else if (data.status == 'errinvalid') 
+        {
+           console.log('要删除的组ID或通道ID非法!');
+          // alert('请求失败!');
+          setTimeout(function(){$('#popupERRNOTEXIST').trigger('create').popup('open');},800);
+        }
+        else
+        {
+          console.log('请求失败!');
+          setTimeout(function(){$('#popupREQERROR').trigger('create').popup('open');},2000);
+          //alert('请求失败!');
+        }
+      },"json").error(function(){
+        console.log('请求失败!');
+          setTimeout(function(){$('#popupREQERROR').trigger('create').popup('open');},600);
+      });
   }
   </script>
 </head>
@@ -154,7 +210,7 @@
                   <td style="vertical-align:middle"><%= configobj['accessories'][i]['groupId'].replace(/"/ig,'') %></td>
                   <td style="vertical-align:middle"><%= configobj['accessories'][i]['channelId'].replace(/"/ig,'') %></td>
                   <td style="vertical-align:middle"><%= configobj['accessories'][i]['channeltype'].replace(/"/ig,'') %></td>
-                  <td style="vertical-align:middle"><a href="#popupDeleteGateWay" data-rel="popup"  data-position-to="window" data-transition="pop" class="ui-btn ui-btn-inline ui-icon-delete ui-btn-icon-left">删除</a></td>
+                  <td style="vertical-align:middle"><a href="#DeleteChannelDlg" onclick='PreDelAccessory("<%= configobj['accessories'][i]['groupId'].replace(/"/ig,'') %>","<%= configobj['accessories'][i]['channelId'].replace(/"/ig,'') %>")' data-rel="popup"  data-position-to="window" data-transition="pop" class="ui-btn ui-btn-inline ui-icon-delete ui-btn-icon-left">删除</a></td>
               </tr>
            <% 
               }
@@ -180,17 +236,25 @@
       </div>
       <div data-role="popup" id="ErrAccessory" data-overlay-theme="b" data-theme="b" data-dismissible="false" style="max-width:400px;">
           <div role="main" class="ui-content">
-              <h3 class="ui-title">GroupID 或 ChannelID 或 类型非法,请重新设置!</h3>
+              <h3 class="ui-title">组号通道号或类型非法,请重新设置!</h3>
               <a href="#" onclick="ShowAddAccessoryDlg()" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-alert" data-rel="back">确定</a>
           </div>
       </div>
 
-      <div data-role="popup" id="popupSIDEMPTY" data-overlay-theme="b" data-theme="b" data-dismissible="false" style="max-width:400px;">
+      <div data-role="popup" id="ErrExistAccessory" data-overlay-theme="b" data-theme="b" data-dismissible="false" style="max-width:400px;">
           <div role="main" class="ui-content">
-              <h3 class="ui-title">要删除的SID不能为空!</h3>
+              <h3 class="ui-title">组号通道号已经存在,请重新设置!</h3>
+              <a href="#" onclick="ShowAddAccessoryDlg()" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-alert" data-rel="back">确定</a>
+          </div>
+      </div>
+
+      <div data-role="popup" id="ErrGroupIdOrChannelIdEmpty" data-overlay-theme="b" data-theme="b" data-dismissible="false" style="max-width:400px;">
+          <div role="main" class="ui-content">
+              <h3 class="ui-title">要删除的GroupID 或 ChannelID不能为空!</h3>
               <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-alert" data-rel="back">确定</a>
           </div>
       </div>
+
       <div data-role="popup" id="popupREQERROR" data-overlay-theme="b" data-theme="b" data-dismissible="false" style="max-width:400px;">
           <div role="main" class="ui-content">
               <h3 class="ui-title">向服务器请求失败,请检查网络设置!</h3>
@@ -248,12 +312,12 @@
                 </form>
       </div>
      
-      <div data-role="popup" id="popupDeleteGateWay" data-overlay-theme="b" data-theme="b" data-dismissible="false" style="max-width:400px;">
+      <div data-role="popup" id="DeleteChannelDlg" data-overlay-theme="b" data-theme="b" data-dismissible="false" style="max-width:400px;">
       
           <div role="main" class="ui-content">
-              <h3 class="ui-title">确定删除该网关?</h3>
+              <h3 class="ui-title">确定删除该通道?</h3>
               <a href="#" class="ui-btn ui-corner-all  ui-btn-inline ui-btn-b" data-rel="back">否</a>
-              <a href="#" class="ui-btn ui-corner-all ui-btn-inline ui-btn-b" onclick='POSTDELSID()' data-rel="back" >是</a>
+              <a href="#" class="ui-btn ui-corner-all ui-btn-inline ui-btn-b" onclick='PostDelAccessory()' data-rel="back" >是</a>
           </div>
       </div>
 </body>
