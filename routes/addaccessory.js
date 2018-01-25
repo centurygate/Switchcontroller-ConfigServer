@@ -24,7 +24,7 @@ router.post('/', function(req, res, next) {
     console.log('________________________________________________________');
       
     console.log("groupId :" + groupId + ", channelId : "+channelId +" , channeltype :"+channeltype);
-    if ((groupId > 0) && (groupId < 255) && (channelId > 0)  && (channelId < 16))
+    if ((groupId >= 0) && (groupId <= 15) && (channelId >= 0)  && (channelId <= 255))
     {
 
         //check the repeatability of the accessory , but only the groupId and channelId will be checked
@@ -39,7 +39,7 @@ router.post('/', function(req, res, next) {
         }
         var accessory =
         {
-                "accessory": "HomebridgeSwitchController-chan"+req.body.channelId,
+                "accessory": "gp"+groupId+"-chan"+channelId+"-"+channeltype,
                 "name": "gp"+groupId+"-chan"+channelId+"-"+channeltype,
                 "port": ipportobj['port'],
                 "host": ipportobj['host'],

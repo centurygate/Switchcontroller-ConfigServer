@@ -86,7 +86,7 @@
       var channelId = $('#ChanelID').val().replace(/\s/g,"");
       var channeltype = $("#ChannelType option:selected").val();
       console.log("groupId :" + groupId + ", channelId : "+channelId +" , channeltype :"+channeltype);
-      if ((groupId > 0) && (groupId < 255) && (channelId > 0)  && (channelId < 16) && (isValidSGroupOrChannel(groupId) && isValidSGroupOrChannel(channelId)))
+      if ((groupId >= 0) && (groupId < 15) && (channelId >= 0)  && (channelId < 255) && (isValidSGroupOrChannel(groupId) && isValidSGroupOrChannel(channelId)))
       {
             $.post('/addaccessory',{groupId:groupId,channelId:channelId,channeltype:channeltype},function(data,status){
             if(data.status == 'ok')
@@ -281,16 +281,16 @@
           <form>
               <div style="padding:10px 20px;">
                   <h3>请填写控制通道信息</h3>
-                  <label for="GroupID">GroupID:    [范围 0~255]</label>
-                  <input type="text" name="GroupID" id="GroupID" value="" placeholder="范围 0~255" data-theme="a" autocomplete="off">
-                  <label for="ChanelID">ChanelID:    [范围 0~15]</label>
-                  <input type="text" name="ChanelID" id="ChanelID" value="" placeholder="范围 0~16" data-theme="a" autocomplete="off">
+                  <label for="GroupID">GroupID:    [范围 0~15]</label>
+                  <input type="text" name="GroupID" id="GroupID" value="" placeholder="范围 0~15" data-theme="a" autocomplete="off">
+                  <label for="ChanelID">ChanelID:    [范围 0~255]</label>
+                  <input type="text" name="ChanelID" id="ChanelID" value="" placeholder="范围 0~255" data-theme="a" autocomplete="off">
                   <fieldset data-role="fieldcontain">
                     <label for="ChannelType">请选择类型</label>
                     <select name="ChannelType" id="ChannelType">
                      <option value="switch">开关</option>
                      <option value="bulb">调光</option>
-                     <option value="inputconrol">输入控制</option>
+                     <option value="inputcontrol">输入控制</option>
                     </select>
                   </fieldset>
                   
