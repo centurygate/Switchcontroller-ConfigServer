@@ -1,8 +1,8 @@
 var express = require('express');
 var fs = require('fs');
 var router = express.Router();
-var ipportpath = "/home/free/host.json";
-var process = require('child_process');
+var configpath = "/home/free/config.json"
+var ipportobj ={host:'',port:''};
 function isValidIP(ip) {
     var reg = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
     return reg.test(ip);
@@ -14,12 +14,12 @@ function isValidPort(str)
         return true;  
      }else{  
         return false;  
-     }   
+     }
 }
 router.post('/', function(req, res, next) {
     var result = {};
     result.status = 'ok';
-    var ipportobj = JSON.parse(fs.readFileSync(ipportpath));
+
     console.log('Read req.body : ' + JSON.stringify(req.body));
     console.log('Read host.json : ' + JSON.stringify(ipportobj));
     try
@@ -30,8 +30,19 @@ router.post('/', function(req, res, next) {
             ipportobj['host']=req.body.host;
             ipportobj['port']=req.body.port;
             result.status =  'ok';
-            console.log("Writing ipportobj : " + JSON.stringify(ipportobj,null,4));
-            fs.writeFileSync(ipportpath,JSON.stringify(ipportobj,null,4));
+            console.log("OverWriting host and port to config.json : " + JSON.stringify(ipportobj,null,4));
+            var configobj = JSON.parse(fs.readFileSync(configpath));
+            //console.log("configobj json: "+JSON.stringify(configobj,null,4));
+            configobj['accessories'] = configobj['accessories']||[];
+            if(configobj['accessories'].length > 0)
+            {
+                for(var i = 0; i< configobj['accessories'].length;i++)
+                {
+                    configobj['accessories'][i]['host']=req.body.host;
+                    configobj['accessories'][i]['port']=req.body.port;
+                }
+                fs.writeFileSync(configpath,JSON.stringify(configobj,null,4));
+            }
             res.end(JSON.stringify(result));        
         }
         else
@@ -55,4 +66,7 @@ router.get('/', function(req, res, next) {
 });
 
 
-module.exports = router;
+module.exports = {
+    addhostportRouter: router,
+    ipportobj:ipportobj
+};

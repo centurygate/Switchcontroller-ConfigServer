@@ -2,13 +2,15 @@ var express = require('express');
 var fs = require('fs');
 var router = express.Router();
 var configpath = "/home/free/config.json";
-var ipportpath = "/home/free/host.json";
+var addhostport = require('./addhostport');
+// var ipportpath = "/home/free/host.json";
 var process = require('child_process');
 /* GET users listing. */
 router.post('/', function(req, res, next) {
     try{
     var configobj = JSON.parse(fs.readFileSync(configpath));
-    var ipportobj = JSON.parse(fs.readFileSync(ipportpath));
+    // var ipportobj = JSON.parse(fs.readFileSync(ipportpath));
+    var ipportobj = addhostport.ipportobj;
     var result = {};
     result.status = 'ok';
     configobj['accessories'] = configobj['accessories']||[];

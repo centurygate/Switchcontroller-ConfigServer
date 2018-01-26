@@ -26,7 +26,7 @@ router.post('/', function(req, res, next) {
     console.log('________________________________________________________');
       
     console.log("groupId :" + groupId + ", channelId : "+channelId);
-    if ((groupId > 0) && (groupId < 255) && (channelId > 0)  && (channelId < 16))
+    if ((groupId >= 0) && (groupId < 15) && (channelId >= 0)  && (channelId < 255))
     {
 
         for (var i = 0; i < len; i++) 
