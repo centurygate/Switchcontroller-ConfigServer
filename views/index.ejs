@@ -7,6 +7,20 @@
   <script type="text/javascript" src="/js/jquery-1.9.1.min.js"></script>
   <script src="/js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
   <script type="text/javascript" src="/js/validateparameter.js"></script>
+  <script src="/js/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+  <link rel="stylesheet" href="/js/jquery-ui-1.12.1.custom/jquery-ui.min.css">
+  <style>
+    .ui-progressbar {
+        position: relative;
+    }
+    .progress-label {
+        position: absolute;
+        left: 45%;
+        top: 4px;
+        font-weight: bold;
+        text-shadow: 1px 1px 0 #fff;
+    }
+  </style>
   <script type="text/javascript">
     $(document).ready(function(){
        $("a[name='AddAccessoryDlg']").click(function(event){
