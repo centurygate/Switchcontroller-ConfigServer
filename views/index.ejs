@@ -273,10 +273,10 @@
             <% for(var i =0; i < configobj['accessories'].length;i++)
             {%>  
               <tr>
-                  <td style="vertical-align:middle"><%= configobj['accessories'][i]['groupId'].replace(/"/ig,'') %></td>
-                  <td style="vertical-align:middle"><%= configobj['accessories'][i]['channelId'].replace(/"/ig,'') %></td>
+                  <td style="vertical-align:middle"><%= configobj['accessories'][i]['groupId'] %></td>
+                  <td style="vertical-align:middle"><%= configobj['accessories'][i]['channelId'] %></td>
                   <td style="vertical-align:middle"><%= configobj['accessories'][i]['channeltype'].replace(/"/ig,'') %></td>
-                  <td style="vertical-align:middle"><a href="#DeleteChannelDlg" onclick='PreDelAccessory("<%= configobj['accessories'][i]['groupId'].replace(/"/ig,'') %>","<%= configobj['accessories'][i]['channelId'].replace(/"/ig,'') %>")' data-rel="popup"  data-position-to="window" data-transition="pop" class="ui-btn ui-btn-inline ui-icon-delete ui-btn-icon-left">删除</a></td>
+                  <td style="vertical-align:middle"><a href="#DeleteChannelDlg" onclick='PreDelAccessory("<%= configobj['accessories'][i]['groupId'] %>","<%= configobj['accessories'][i]['channelId'] %>")' data-rel="popup"  data-position-to="window" data-transition="pop" class="ui-btn ui-btn-inline ui-icon-delete ui-btn-icon-left">删除</a></td>
               </tr>
            <% 
               }
@@ -285,7 +285,7 @@
       </table>
     </div>
     <div data-role="footer">
-        <div align="center"><a href="mailto:centurygate@163.com">centurygate@163.com</a></div>
+        <div align="center"></div>
       </div>
 
       <div data-role="popup" id="popupREQOK" data-overlay-theme="b" data-theme="b" data-dismissible="false" style="max-width:400px;">
