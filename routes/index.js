@@ -2,7 +2,8 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 var addhostport = require('./addhostport');
-var configpath = "/home/free/config.json";
+// var configpath = "/home/free/config.json";
+var configpath = "/root/.homebridge/config.json";
 
 /* GET home page. */
 router.get('/', function(req, res, next) {

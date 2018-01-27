@@ -1,37 +1,37 @@
 var express = require('express');
 var fs = require('fs');
 var router = express.Router();
-var configpath = "/home/free/config.json";
-var ipportpath = "/home/free/host.json";
-var process = require('child_process');
+// var configpath = "/home/free/config.json";
+var configpath = "/root/.homebridge/config.json";
 var pos = 0;
-// var find = false;
+
 /* GET users listing. */
 router.post('/', function(req, res, next) {
     try{
     var configobj = JSON.parse(fs.readFileSync(configpath));
-    var ipportobj = JSON.parse(fs.readFileSync(ipportpath));
+
     var result = {};
     result.status = 'ok';
     configobj['accessories'] = configobj['accessories']||[];
     var len = configobj['accessories'].length;
-    var groupId = req.body.groupId;
-    var channelId = req.body.channelId;
-    
+
+    var groupId = parseInt(req.body.groupId,10);
+    var channelId = parseInt(req.body.channelId,10);
+
     console.log('________________________________________________________');
     console.log("Read config.json   "+JSON.stringify(configobj));
-    console.log('Read host.json : ' + JSON.stringify(ipportobj));
+
     console.log('________________________________________________________');
     console.log(JSON.stringify(req.body));
     console.log('________________________________________________________');
       
     console.log("groupId :" + groupId + ", channelId : "+channelId);
-    if ((groupId >= 0) && (groupId < 15) && (channelId >= 0)  && (channelId < 255))
+    if ((!isNaN(groupId))&&(!isNaN(channelId))&&(groupId >= 0) && (groupId <= 15) && (channelId >= 0)  && (channelId <= 255))
     {
 
         for (var i = 0; i < len; i++) 
         {
-            if(configobj['accessories'][i].groupId == groupId && configobj['accessories'][i].channelId == channelId)
+            if((typeof(configobj['accessories'][i].groupId) !== 'undefined')&&(typeof(configobj['accessories'][i].channelId) !== 'undefined')&&(configobj['accessories'][i].groupId === groupId) && (configobj['accessories'][i].channelId === channelId))
             {
                 // result.status =  'ok';
                 // console.log("The System will delete the accessory : \n" + configobj['accessories'][i]);
