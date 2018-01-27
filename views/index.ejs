@@ -4,23 +4,25 @@
 <head>
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <link rel="stylesheet" href="/js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.css">
+  <link rel="stylesheet" type="text/css" href="/stylesheets/jQMProgressBar.css" />
   <script type="text/javascript" src="/js/jquery-1.9.1.min.js"></script>
-  <script src="/js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
+  <script type="text/javascript" src="/js/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script type="text/javascript" src="/js/jQMProgressBar.js"></script>
   <script type="text/javascript" src="/js/validateparameter.js"></script>
-  <script src="/js/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
-  <link rel="stylesheet" href="/js/jquery-ui-1.12.1.custom/jquery-ui.min.css">
-  <style>
-    .ui-progressbar {
-        position: relative;
-    }
-    .progress-label {
-        position: absolute;
-        left: 45%;
-        top: 4px;
-        font-weight: bold;
-        text-shadow: 1px 1px 0 #fff;
-    }
-  </style>
+  <!--<script src="/js/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>-->
+  <!--<link rel="stylesheet" href="/js/jquery-ui-1.12.1.custom/jquery-ui.min.css">-->
+  <!--<style>-->
+    <!--.ui-progressbar {-->
+        <!--position: relative;-->
+    <!--}-->
+    <!--.progress-label {-->
+        <!--position: absolute;-->
+        <!--left: 45%;-->
+        <!--top: 4px;-->
+        <!--font-weight: bold;-->
+        <!--text-shadow: 1px 1px 0 #fff;-->
+    <!--}-->
+  <!--</style>-->
   <script type="text/javascript">
     $(document).ready(function(){
        $("a[name='AddAccessoryDlg']").click(function(event){
@@ -34,6 +36,18 @@
           event.stopPropagation();
         }
       });
+        $(document)
+            .on('complete', '#progressbar', function () {
+                // your code
+                //为了去掉刷新页面时 url地址中的hash片段因此特意删除hash片段后再赋值给window.location
+                var loc = window.location.href;
+                var index = loc.indexOf('#');
+
+                if (index > 0) {
+                    window.location = loc.substring(0, index);
+                }
+                setTimeout(function(){window.location.reload()},600);
+            });
     });
     function ShowSetHostDlg()
     {
@@ -98,7 +112,8 @@
     {
       var groupId = $('#GroupID').val().replace(/\s/g,"");
       var channelId = $('#ChanelID').val().replace(/\s/g,"");
-      var channeltype = $("#ChannelType option:selected").val();
+      // var channeltype = $("#ChannelType option:selected").val();
+      var channeltype = $('input[name="channeltype"]:checked').val();
       console.log("groupId :" + groupId + ", channelId : "+channelId +" , channeltype :"+channeltype);
       if ((groupId >= 0) && (groupId < 15) && (channelId >= 0)  && (channelId < 255) && (isValidSGroupOrChannel(groupId) && isValidSGroupOrChannel(channelId)))
       {
@@ -194,36 +209,46 @@
                 //此处弹出进度条
                 setTimeout(function(){$('#popupProgress').trigger('create').popup('open');},800);
                 setTimeout(function() {
-                    var progressbar = $( "#progressbar" ),
-                        progressLabel = $( ".progress-label" );
-
-                    progressbar.progressbar({
-                        value: 0,
-                        change: function() {
-                            progressLabel.text( progressbar.progressbar( "value" ) + "%" );
-                        },
-                        complete: function() {
-                            //progressLabel.text( "完成,页面跳转中！" );
-                            //为了去掉刷新页面时 url地址中的hash片段因此特意删除hash片段后再赋值给window.location
-                            var loc = window.location.href;
-                            var index = loc.indexOf('#');
-
-                            if (index > 0) {
-                                window.location = loc.substring(0, index);
-                            }
-                            setTimeout(function(){window.location.reload()},600);
-                        }
-                    });
-                    function progress() {
-                        var val = progressbar.progressbar( "value" ) || 0;
-
-                        progressbar.progressbar( "value", val + 1 );
-                        if ( val < 99 ) {
-                            setTimeout( progress, 1000 );
-                        }
-                    }
-
-                    setTimeout( progress, 10 );
+                    // var progressbar = $( "#progressbar" ),
+                    //     progressLabel = $( ".progress-label" );
+                    //
+                    // progressbar.progressbar({
+                    //     value: 0,
+                    //     change: function() {
+                    //         progressLabel.text( progressbar.progressbar( "value" ) + "%" );
+                    //     },
+                    //     complete: function() {
+                    //         //progressLabel.text( "完成,页面跳转中！" );
+                    //         //为了去掉刷新页面时 url地址中的hash片段因此特意删除hash片段后再赋值给window.location
+                    //         var loc = window.location.href;
+                    //         var index = loc.indexOf('#');
+                    //
+                    //         if (index > 0) {
+                    //             window.location = loc.substring(0, index);
+                    //         }
+                    //         setTimeout(function(){window.location.reload()},600);
+                    //     }
+                    // });
+                    // function progress() {
+                    //     var val = progressbar.progressbar( "value" ) || 0;
+                    //
+                    //     progressbar.progressbar( "value", val + 1 );
+                    //     if ( val < 99 ) {
+                    //         setTimeout( progress, 1000 );
+                    //     }
+                    // }
+                    //
+                    // setTimeout( progress, 10 );
+                    jQMProgressBar('progressbar')
+                        .setOuterTheme('b')
+                        .setInnerTheme('e')
+                        .isMini(true)
+                        .setMax(100)
+                        .setStartFrom(0)
+                        .setInterval(1500)
+                        .showCounter(true)
+                        .build()
+                        .run();
                 },800);
             }
             else
@@ -351,15 +376,13 @@
                   <input type="text" name="GroupID" id="GroupID" value="" placeholder="范围 0~15" data-theme="a" autocomplete="off">
                   <label for="ChanelID">ChanelID:    [范围 0~255]</label>
                   <input type="text" name="ChanelID" id="ChanelID" value="" placeholder="范围 0~255" data-theme="a" autocomplete="off">
-                  <fieldset data-role="fieldcontain">
-                    <label for="ChannelType">请选择类型</label>
-                    <select name="ChannelType" id="ChannelType">
-                     <option value="switch">开关</option>
-                     <option value="bulb">调光</option>
-                     <option value="inputcontrol">输入控制</option>
-                    </select>
-                  </fieldset>
-                  
+
+                  <input type="radio" id="switch" name="channeltype" value="switch" style="" checked="checked">
+                  <label for="switch" >开关</label>
+                  <input type="radio" id="bulb" name="channeltype" value="bulb" style="">
+                  <label for="bulb" >调光</label>
+                  <input type="radio" id="inputcontrol" name="channeltype" value="inputcontrol" style="">
+                  <label for="inputcontrol" >输入控制</label>
                   <a href="#"  onclick = "AddAccessory()" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check" data-rel="back">确定</a>
                   
               </div>
@@ -377,7 +400,8 @@
       <div data-role="popup" id="popupProgress" data-overlay-theme="b" data-theme="b" data-dismissible="false" style="min-width:300px;max-width:400px;">
               <div role="main" class="ui-content">
                       <h3 align="center" class="ui-title">请耐心等候,切勿断电!</h3>
-                      <div id="progressbar"><div class="progress-label"></div></div>
+                      <div id="progressbar"></div>
+              <!--        <div id="progressbar"><div class="progress-label"></div></div>-->
                   </div>
       </div>
       <div data-role="popup" id="SetHostDlg" data-theme="a" class="ui-corner-all" style="min-width:310px;max-width:400px;">
