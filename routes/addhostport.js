@@ -1,10 +1,11 @@
 var express = require('express');
 var fs = require('fs');
 var router = express.Router();
-var configpath = "/home/free/config.json"
+// var configpath = "/home/free/config.json";
+var configpath = "/root/.homebridge/config.json";
 var ipportobj ={host:'',port:''};
 function isValidIP(ip) {
-    var reg = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
+    var reg = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/;
     return reg.test(ip);
 }
 function isValidPort(str)  

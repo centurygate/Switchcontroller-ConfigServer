@@ -1,10 +1,11 @@
 var express = require('express');
 var fs = require('fs');
 var router = express.Router();
-var configpath = "/home/free/config.json";
+// var configpath = "/home/free/config.json";
+var configpath = "/root/.homebridge/config.json";
 var addhostport = require('./addhostport');
 // var ipportpath = "/home/free/host.json";
-var process = require('child_process');
+// var process = require('child_process');
 /* GET users listing. */
 router.post('/', function(req, res, next) {
     try{
@@ -15,8 +16,8 @@ router.post('/', function(req, res, next) {
     result.status = 'ok';
     configobj['accessories'] = configobj['accessories']||[];
     var len = configobj['accessories'].length;
-    var groupId = req.body.groupId;
-    var channelId = req.body.channelId;
+    var groupId = parseInt(req.body.groupId,10);
+    var channelId = parseInt(req.body.channelId,10);
     var channeltype = req.body.channeltype;
     console.log('________________________________________________________');
     console.log("Read config.json   "+JSON.stringify(configobj));
@@ -26,13 +27,13 @@ router.post('/', function(req, res, next) {
     console.log('________________________________________________________');
       
     console.log("groupId :" + groupId + ", channelId : "+channelId +" , channeltype :"+channeltype);
-    if ((groupId >= 0) && (groupId <= 15) && (channelId >= 0)  && (channelId <= 255))
+    if ((!isNaN(groupId))&&(!isNaN(channelId))&&(groupId >= 0) && (groupId <= 15) && (channelId >= 0)  && (channelId <= 255) &&((channeltype === 'switch')||(channeltype === 'bulb')||(channeltype === 'inputcontrol')))
     {
 
         //check the repeatability of the accessory , but only the groupId and channelId will be checked
         for(var k =0; k < configobj['accessories'].length; k++)
         {
-            if (configobj['accessories'][k]['groupId'] == groupId && configobj['accessories'][k]['channelId'] == channelId) 
+            if (configobj['accessories'][k]['groupId'] === groupId && configobj['accessories'][k]['channelId'] === channelId)
             {
                 result.status = 'errexist';
                 res.end(JSON.stringify(result));
