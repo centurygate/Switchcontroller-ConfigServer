@@ -46,8 +46,8 @@ router.post('/', function(req, res, next) {
                 "name": "gp"+groupId+"-chan"+channelId+"-"+channeltype,
                 "port": ipportobj['port'],
                 "host": ipportobj['host'],
-                "groupId": groupId,
-                "channelId": channelId,
+                "groupId": groupId+"",
+                "channelId": channelId+"",
                 "channeltype":channeltype
         };
         result.status =  'ok';
