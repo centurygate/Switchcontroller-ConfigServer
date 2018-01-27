@@ -9,6 +9,7 @@ var index = require('./routes/index');
 var addhostport = require('./routes/addhostport');
 var addaccessory = require('./routes/addaccessory');
 var delaccessory = require('./routes/delaccessory');
+var applyconfig = require('./routes/applyconfig');
 var app = express();
 
 // view engine setup
@@ -27,6 +28,7 @@ app.use('/', index);
 app.use('/addhostport', addhostport.addhostportRouter);
 app.use('/addaccessory', addaccessory);
 app.use('/delaccessory', delaccessory);
+app.use('/applyconfig',applyconfig);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
