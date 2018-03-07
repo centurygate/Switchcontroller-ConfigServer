@@ -115,7 +115,7 @@
       // var channeltype = $("#ChannelType option:selected").val();
       var channeltype = $('input[name="channeltype"]:checked').val();
       console.log("groupId :" + groupId + ", channelId : "+channelId +" , channeltype :"+channeltype);
-      if ((groupId >= 0) && (groupId < 15) && (channelId >= 0)  && (channelId < 255) && (isValidSGroupOrChannel(groupId) && isValidSGroupOrChannel(channelId)))
+      if ((groupId >= 0) && (groupId <= 15) && (channelId >= 0)  && (channelId <= 255) && (isValidSGroupOrChannel(groupId) && isValidSGroupOrChannel(channelId)))
       {
             $.post('/addaccessory',{groupId:groupId,channelId:channelId,channeltype:channeltype},function(data,status){
             if(data.status == 'ok')
